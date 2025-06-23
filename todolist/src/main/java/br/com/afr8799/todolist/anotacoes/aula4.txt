@@ -1,0 +1,53 @@
+// FILE PRIMEIROCONTROLLER.Java
+// ESTE FILE FOI DELETADO NA AULA 5 - FUNCIONALIDADE DE USUÁRIO, POIS NÃO SERÁ USADO
+// É APENAS PARA APRENDER ENTENDER E VER COMO FUNCIONA MÉTODOS HTTP E ROTA
+
+/*
+Inicia apenas com estas declarações
+
+package br.com.afr8799.todolist.controler;
+
+public class PrimeiroController {
+    
+}
+
+obs: o nome da classe é o nome do file, então deve por com 1° uppercase/letra maiúscula 
+
+métodos  de um requisição/acesso http:
+GET    - BUSCA INFORMAÇÃO
+POST   - ADD DADOS
+PUT    - ALTERA DADOS
+PATCH  - ALTERA UMA PARTE/ UMA COISA
+DELETE - DELETA
+
+dar run, ir para bronser, por url - localhost:8080/primeira_rota/
+*/
+
+package br.com.afr8799.todolist.controler;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+//Por o decorador/notation, ex @RestController que, automaticamente, aparecerá o import, ex import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+
+// estrutura a rota
+@RequestMapping("/primeira_rota")
+
+public class PrimeiroController {
+
+    @GetMapping("")
+    // aqui rota fica /primeira_tota
+    // GetMapping("/") a rota fica /primeira_tota/
+    // caso esqueça de por /, coloque / a mais, ou digite algo errado do url, dará "Whitelabel Error Page", um 404, "Página de erro Whitelabel" (whitelabel = rótulo branco)
+
+    //chamar método de uma classe com mensagem
+    public String primeiraMensagem(){
+        // mensagem que irá aparecer na tela ao fazer requisição
+        return "Saluton Java's Mondo";
+    }
+}
+
+/* springBoot funciona de forma RECURSIVA - 1° vai na classe principal (todolistApplicatio.java, que está na pasta todolist) e depois irá, dentro da pasta todolist, percorrer os outros folder e files. Sendo assim controller deve estar na mesma pasta principal/estrutura, que o Application, mesmo que dentro de outra pasta.
