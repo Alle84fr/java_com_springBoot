@@ -1,0 +1,63 @@
+// UserController.java
+
+package br.com.afr8799.todolist.users;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+//annotation Rest traz os métodos rest
+// anotation Request dará a rota dos usuários
+
+@RestController
+@RequestMapping ("/users")
+
+
+public class UserController {
+    // método http - adicionar infromações novas
+    @PostMapping("/")
+
+    //tipos String - textos
+    //tipo Char = um caractere
+    //tipo Float ou Double = numeros quebrados
+    //tipo Integrer = Int = número interio
+    //tipo Date = data
+    //tipo void - sem retorno
+
+    //público, sem retorno, criar (dados do usuário a ser cadastrado)
+    // estes dados precisam vir de um objeto que representa o usuário - create file que possua, neste caso, uma classe com atributos que preciso para cadastrar (Usermolde - modelo de usuário)
+    // dentro do ( receberá a classe UserModel e objeto)
+    // ainda dentro do parênteses, como está trabalhando com springBoot, e que os dados virão de uma requisição, deve chamar @RequestBody, pois está criando cadastro, estes dados virão do BODY DA REQUISIÇÃO
+    
+    public void create(@RequestBody UserModel userModel) {
+        System.out.println(userModel.name);
+    }
+
+}
+
+// ir para todoslistAppliaction para dar run
+// ir para app apidog (salvo no computador)
+//  meu projeto http - + - new request - post - url (localhost:8080/users/) - body -json
+
+// Estou com erro:
+// cannot find symbol (erros(1):32:337-32:46) [Ln32, Col37]
+// symbol: class UserModel
+// location: class UserController
+
+// Segundo "erro", vejo mais como aviso, variáveis do UserModel não foram lidas (Variable username is never read ... )
+
+// Arrumando
+// ctrl shif p (Show and run commands >)
+//digite : Java: Clean Java Language Server Workspace
+// aceite deletar e sei lá o que, esqueci o outro
+// depois fechar e abrir vscode
+// o erro sumiu, mas voltou
+// aparente ao dar estes comando atualiza do java
+// files estão na mesma pasta user
+// nome estão correto
+
+//MUDEI NOME DO FOLDER PARA USERS
+
+// IREI TIRAR COMENTÁRIOS

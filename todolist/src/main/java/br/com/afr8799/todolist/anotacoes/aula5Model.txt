@@ -1,0 +1,13 @@
+//UserModel.java
+
+package br.com.afr8799.todolist.users;
+
+public class UserModel {
+    //Classe que irá receber criar o objeto contendo infromações do usuário 
+
+    String username;
+    String name;
+    String password;
+}
+    //variáveis precisam de um tipo e de um modificador, neste caso o tipo de acesso não foi passado, o que significa que ele é público
+    //agora voltar para file UserController e chamar esta classe

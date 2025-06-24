@@ -11,7 +11,7 @@ public class PrimeiroController {
     
 }
 
-obs: o nome da classe é o nome do file, então deve por com 1° uppercase/letra maiúscula 
+obs: o nome da classe é extamente o mesmo nome do file, então deve por com 1° uppercase/letra maiúscula 
 
 métodos  de um requisição/acesso http:
 GET    - BUSCA INFORMAÇÃO
