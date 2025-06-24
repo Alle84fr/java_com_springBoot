@@ -38,8 +38,15 @@ public class UserController {
 }
 
 // ir para todoslistAppliaction para dar run
-// ir para app apidog (salvo no computador)
-//  meu projeto http - + - new request - post - url (localhost:8080/users/) - body -json
+// ir para site https://www.postman.com/ - new request -  Post - localhost:8080/users/ - body - raw - json 
+//{
+//    "username": "Ale",
+//    "name": "ALessa",
+//    "password": "abacate"
+//}
+// Send 
+// parte de dabixo body - 200 ok
+
 
 // Estou com erro:
 // cannot find symbol (erros(1):32:337-32:46) [Ln32, Col37]
@@ -53,10 +60,14 @@ public class UserController {
 //digite : Java: Clean Java Language Server Workspace
 // aceite deletar e sei lá o que, esqueci o outro
 // depois fechar e abrir vscode
+//ctrl shift b
+// Run Build Task
 // o erro sumiu, mas voltou
 // aparente ao dar estes comando atualiza do java
 // files estão na mesma pasta user
 // nome estão correto
+
+// não sei o que foi mas arrumou
 
 //MUDEI NOME DO FOLDER PARA USERS
 
