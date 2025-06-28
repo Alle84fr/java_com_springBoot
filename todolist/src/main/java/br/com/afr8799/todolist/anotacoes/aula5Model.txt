@@ -3,7 +3,7 @@
 package br.com.afr8799.todolist.users;
 
 public class UserModel {
-    //Classe que irá receber criar o objeto contendo infromações do usuário 
+    //Classe que irá receber criar o OBJETO contendo infromações do usuário 
 
     String username;
     String name;
@@ -11,3 +11,8 @@ public class UserModel {
 }
     //variáveis precisam de um tipo e de um modificador, neste caso o tipo de acesso não foi passado, o que significa que ele é público
     //agora voltar para file UserController e chamar esta classe
+
+    // OBJETO|INSTÂNCIA = "cópia" da classe, com valores específicos
+    //                  = é um Model, um new, uma coisa
+    //                  = característica de algo
+    //                  = é um ESTADO (carro.ligado = true)

@@ -47,6 +47,12 @@ public class UserController {
 // Send 
 // parte de dabixo body - 200 ok
 
+//MÉTODO = AÇÃO OU FUNÇÃO que namipula objeto ou classe executa
+//       = definido dentro da classe (ex: public void create())
+//       = pode receber parâmetro e ter return
+//       = execução de uma lógica
+//       = Controller
+
 
 // Estou com erro:
 // cannot find symbol (erros(1):32:337-32:46) [Ln32, Col37]
@@ -71,4 +77,3 @@ public class UserController {
 
 //MUDEI NOME DO FOLDER PARA USERS
 
-// IREI TIRAR COMENTÁRIOS

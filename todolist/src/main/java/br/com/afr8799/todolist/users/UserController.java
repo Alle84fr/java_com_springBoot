@@ -1,5 +1,6 @@
 package br.com.afr8799.todolist.users;
 
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +15,7 @@ public class UserController {
     @PostMapping("/")
 
     public void create(@RequestBody UserModel userModel) {
-        System.out.println(userModel.name);
+        System.out.println(userModel.getName());
     }
 }
 
