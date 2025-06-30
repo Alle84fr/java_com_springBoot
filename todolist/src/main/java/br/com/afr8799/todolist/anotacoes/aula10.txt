@@ -1,0 +1,118 @@
+Aula respositório / respository
+
+onde os métodos que será usado, salvar, criar ....
+
+Interface = modelo, contrato - tem os métodos mas não tem a implementação
+        para implementar deve criar um classe
+
+____________________________________ cód  Iuserrepository
+
+package br.com.afr8799.todolist.users;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+// dentro do <> coloca a classe que o repositório está representando, que recebe generator (atributos dinâmicos)
+// depois coloca o id, que é UUID
+
+package br.com.afr8799.todolist.users;
+
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
+public interface IUserRepository extends JpaRepository<UserModel, UUID> {
+
+}
+
+// ir para usercontroller e instaciar, gerenciar o método
+
+__________________________________ cód usercontroller 
+
+package br.com.afr8799.todolist.users;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping ("/users")
+
+
+public class UserController {
+    
+    // private IUserRepository userREpository; - aqui chama a interface, mas só com isso dará nulo, porque não foi inicializado
+    // spring gerenciar o ciclo de vida - annotation
+
+    @Autowired
+    private IUserREpository userREpository;
+
+    @PostMapping("/")
+
+    public UserModel create(@RequestBody UserModel userModel) {
+        var userCreated =  this.userREpository.save(userModel);
+        return userCreated;
+    
+    // dentro da classe usercontroller tem este método público, que está fazendo referencia ao usermolde
+    // seu parametro vem do corpo da requisição http sendo do tipo usermodel e o objto é usermolde
+    // variáveel mutável, que recebe do file repository a interface e sua função é salvar os dados do objeto usermodel
+    // retonará a variável criada
+    }
+}
+
+------------------------------------- run TodoslistApplication
+
+ir no postman ou apidog e criar um dado
+
+apiDog -> + -> new request -> post -> Post - localhost:8080/users/ -> body -> json
+
+{
+    "username": "Lela",
+    "name": "Alessa",
+    "password": "uaia"
+}
+
+send
+
+restono:
+    200 = http status ok
+    114 ms
+    138 B
+
+    body -> Pretty -> jason
+
+    {
+        "id": "ef927518-f0df-4148-83ba-4ec0e315c3a7",
+        "username": "Lela",
+        "name": "Alessa",
+        "password": "uaia",
+        "createdAt": "2025-06-30T17:17:15.200363"
+    }
+
+--------------------------------------------- conferir no h2
+
+ir no h2, dar reload
+
+connect
+
+seleciona/ clica na tabela TB_USERS
+
+RUN (1° aba da tabela)
+irá aparecer SELECT * FROM TB_USERS
+
+na parte de baixo aparecerá:
+
+SELECT * FROM TB_USERS;
+___________________________________________________________________________________________________
+|CREATED_AT  	             |ID  	                                |NAME  	|PASSWORD  	|USERNAME |
+___________________________________________________________________________________________________
+|2025-06-30 17:17:15.200363	 |ef927518-f0df-4148-83ba-4ec0e315c3a7	|Alessa	|uaia	    |Lela     |
+___________________________________________________________________________________________________
+(1 row, 2 ms)
+
+depois é só fazer os mesmos passos e ir criando novos usuários
+
+Obser - AINDA PERMITE USUÁRIOS IGUAIS
