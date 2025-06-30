@@ -1,0 +1,37 @@
+atenção, observações que tirei fora da aula
+
+API = APLICATION PROGRAMMING INTERFACE | Interface de programação de aplicações
+
+    Conjunto de ferramentas, definições e protocolos para criação de aplicação de softwares
+    Simplifica o design
+    Administra o usado
+    Precisa de rede entre os computadores (HTTP + URL)
+
+    COMUNICAÇÃO ENTRE softwares
+
+URL = UNIFORM RESOURCE LOCATOR | Localizador Uniforme de Recursos
+
+    Endereço de um site ou arquivo localizado na Internet
+    Possui esquema : protocólo - http/https/ftp (transferência de arquivos para servidor)
+           domínio : entre protocólo e /
+           subdomínio : após o / - informações dentro do site
+           extensão do domínio : ex: .org .com .br
+           subdiretório : pags internas do site
+
+INTERNET = Coleção de redes que usa protocólo aberto para se comunicar e formar a REDE DE ALCANCE MUNDIAL (WORLD WIDE WEB - www)
+
+obs = web =  coleção de documentos que são interligados e executados na Internet
+
+HTTP = HYPERTEXT TRANSFER PROTOCOL | Protocolo de transferência de Hipertexto
+       Protocolo, conjunto de regas de comunicação que define uma linguagem para cliente e servidor se comunicarem
+       Modelo OSI - OPEN SYSTEM INTERCONNECTION | Interconexão de Sistemas abertos - define os tipos de soluções e respostas, deixando a coimunicação padronizada
+
+ENDPOINT = Ponto de contato final no sistema de comunicação da API
+           Inclui  urls de servidores
+           simplifica como será integrado novos componentes de aplicações a uma arquitetura pré-existente
+
+ORM = OBJECT RELATIONAL MAPPING | Mapeameno de objeto relacional
+
+    Código que irá interagir com o banco de dados
+    Faz a comunicação/ tradução a estrutura do SQL e da api
+    Possibilita escrever a estrutura do bd no próprio código, podendo ser reutilizado
