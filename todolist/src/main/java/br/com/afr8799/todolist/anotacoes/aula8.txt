@@ -1,0 +1,87 @@
+Spring data jpa
+
+comunicação com bd, manipulação, cama de comunicação com com app
+Utiliza ORM - Objeto que será transformado na linguagem SQL
+
+ir no pom.xml
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+
+.....................................
+
+banco de dados
+
+H2 DataBase Engine 
+
+Banco de dados em memória, não tem de instalar, só configurar
+
+AO REINICIAR PERDE OS DADOS - VOLÁTIL - USADO PARA ENTENDER CONCEITO
+
+
+ir no pom.xml
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+CONFIGURANDO (configurando java com banco de dados)
+
+APPLICATION.PROPERTIES
+
+todolist > src > resources > application.properties
+
+// spring = demonstra que está relacionado ao Spring boot(auto-configuração)
+
+spring.datasource.url= jdbc:h2:mem:bdtodolist 
+// url de conexão com a donte do bd
+// jdbc:h2 = sixtaxe padrão da conexão
+
+----------------- ATENÇÃO---------------------
+DEU ERRO
+General error: "java.nio.file.InvalidPathException: Illegal char <:> at index 3: men:todolist" [50000-232] HY000/50000 (Help)
+MOTIVO
+MEN =! MEM 
+
+ESTAVA                                   CORRETO
+
+jdbc:h2:men:bdtodolist                  jdbc:h2:mem:bdtodolist 
+
+spring.datasource.driver-class-name=org.h2.Driver
+// especifica o driver JDBC que será USADO
+// estabele a conexão
+
+spring.datasource.username=admin
+// nome do usuário de autentificação
+
+spring.datasource.password=admin
+// senha para autentificação
+
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+// configura o Hibernate(framework de ORM usado pelo Spring JPA)
+// garante que as queries geradas selo JPA sejam compatíveis com h2
+
+spring.h2.console.enabled= true
+// ativa interface web (consele) para visualizar e gerenciar o bd H2
+// Acessível em: http://localhost:8080/h2-console (assumindo que a aplicação roda na porta 8080).
+
+
+para ver se funciona - ir no TodoslistApplication.java e dar run
+
+! PARA ACESSAR !
+
+http://localhost:8080/h2-console
+
+em JDBC URL = jdbc:h2:men:bdtodolist
+
+por user name = admin
+por password = admin
+
+connect
+
+No console dá para fazer alterações também

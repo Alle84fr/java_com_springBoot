@@ -1,0 +1,38 @@
+package br.com.afr8799.todolist.users;
+
+import lombok.Data;
+
+//define getter e setter juntos
+@Data
+public class UserModel {
+    //Classe que irá receber criar o objeto contendo infromações do usuário 
+
+    private String username;
+    private String name;
+    private String password;
+
+
+}
+
+
+Se quiser apenas em um dos atributos
+
+package br.com.afr8799.todolist.users;
+
+import lombok.Data;
+
+
+public class UserModel {
+    //Classe que irá receber criar o objeto contendo infromações do usuário 
+
+    //deixa em cima do atribuito
+    // quando for chamar no Controler, observar o método
+    @Getter
+    private String username;
+
+    @Setter
+    private String name;
+    private String password;
+
+
+}
