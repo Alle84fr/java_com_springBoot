@@ -1,3 +1,9 @@
+UTILIZANDO RESPONSEENTITY
+
+Ainda tratamento de erros - retornos
+
+_______________________________________________________________ cód controller
+
 package br.com.afr8799.todolist.users;
 
 
@@ -19,19 +25,24 @@ public class UserController {
     @Autowired
     private IUserRepository userREpository;
 
-   
+    // Response irá retornar sucessor e erros
     @PostMapping("/")
     public ResponseEntity create(@RequestBody UserModel userModel) {
         
         var user = this.userREpository.findByUsername(userModel.getUsername());
 
-       
+        // 1° tratar o erro, mensagem mais status
         if(user != null) {
+            // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário já cadastrado");
+            // quero deixar 400 direto, outra forma de fazer
+            // ao escrever no body, não digitar body, mas sim ir direto com a mensagem ("BAD_REQUEST...")
             return ResponseEntity.status(400).body("BAD_REQUEST - Usuário já cadastrado");
             
         }
 
-
+        // 2° deu certo/ criou
+        // o return deve ser 200 e não 201(que não tem retorno)
+        // quero deixar 200, outra forma de fazer
         var userCreated =  this.userREpository.save(userModel);
         return ResponseEntity.status(200).body(userCreated);
     }

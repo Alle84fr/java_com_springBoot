@@ -35,3 +35,17 @@ ORM = OBJECT RELATIONAL MAPPING | Mapeameno de objeto relacional
     Código que irá interagir com o banco de dados
     Faz a comunicação/ tradução a estrutura do SQL e da api
     Possibilita escrever a estrutura do bd no próprio código, podendo ser reutilizado
+
+ENTIDADE | ENTITY = classe que representa uma tabela em um banco de dados relacional
+    Cada instância/objeto representa um linha
+
+!!!!!!!!!!!!!!!!!!!!   QUERY  
+
+                    CONSULTAAAAA - COMANDOS COMO:
+                                 
+                                 SELECT - busca
+                                 INSERT - add
+                                 UPDATE - atualiza
+                                 DELETE - apaga
+
+INTERFACE = 
