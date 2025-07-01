@@ -1,3 +1,26 @@
+Hash da senha
+
+Aparece a senha, está sem segurança
+
+criptografar/mascarar
+
+lib = bcrypt
+
+-------------------------------------------------------------
+
+// deve ser este, o da aula deu erro, acho que a versão está descontinuada
+https://mvnrepository.com/artifact/at.favre.lib/bcrypt
+
+ir no pom.xml
+
+		<dependency>
+			<groupId>at.favre.lib</groupId>
+			<artifactId>bcrypt</artifactId>
+			<version>0.10.2</version>
+		</dependency>
+
+_______________________________________________________________ cód controller
+
 package br.com.afr8799.todolist.users;
 
 
@@ -47,3 +70,14 @@ public class UserController {
     }
 }
 
+------------------------------------------------- run todolistApplication
+
+ir para apiDog
+
+send
+
+senha irá aparecer
+
+"password": "$2a$12$o7u7t76ylU.Uya5QuazEo.OscDqbW/g84DAosp10vlo27vFR/kDDe",
+
+se for no h2, irá aparecer igual
