@@ -27,7 +27,6 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,11 +40,11 @@ public class TaskModel {
     // id da pk - private UUID id;
     @Id
     @GeneratedValue(generator = "UUID")
+    private UUID id;
+    // limitar quantidade de caracteres na descrição, eu que quis - apenas 200 caracteres
 
     // criar a caracteristica, o objeto, o que terá nesta tarefa
     private UUID idUsuario;
-    private UUID id;
-    // limitar quantidade de caracteres na descrição, eu que quis - apenas 200 caracteres
     @Column(length = 200)
     private String descricao;
 

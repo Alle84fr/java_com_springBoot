@@ -1,0 +1,68 @@
+Cadastro da tabela
+
+no folder task
+
+new file - TaskController
+           ItaskRepository - será a interface, por isso o i na frente
+
+-----------------------------------------
+post
+localhost:8080/tasks/
+body
+json
+
+{
+    "idUsuario": "24134a11-a4b4-4494-9b60-3c119cacd398",
+    "descricao": "aprendendo java co rocketseat",
+    "titulo": "Cadastro tarefa",
+    "inicio": "2025-06-30T23:18:00",
+    "fim": "2025-07-01T00:18:00",
+    "prioridade": "média"
+}
+
+// padrão data, o t deve estar entre  data e hora yyyy-mm-ddT
+// idUsuario - 1° criei um e depois copiei
+
+ir no h2, ver tabela do user e depois do task, ambas devem aparecer
+
+_________________________________________________________ cód Task TaskController
+
+package br.com.afr8799.todolist.task;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+
+
+@RestController
+@RequestMapping("/tasks")
+
+public class TaskController {
+    
+    @Autowired
+    private ITaskRepository taskRespository;
+    
+    @PostMapping("/")
+    public TaskModel create(@RequestBody TaskModel taskModel) {
+
+        var task = this.taskRespository.save(taskModel);
+        return task;
+
+    }
+}
+
+_________________________________________________________ cód ItaskRepository
+
+package br.com.afr8799.todolist.task;
+
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ITaskRepository extends JpaRepository<TaskModel, UUID> {
+    
+}
+
+// ir para controller task
