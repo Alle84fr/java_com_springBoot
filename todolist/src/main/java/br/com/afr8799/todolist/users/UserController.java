@@ -34,9 +34,6 @@ public class UserController {
             
         }
 
-        // fazendo hash, criptogrsfia (12 - força da senha, é a mesma da documentação, a senha que será criptografada - da usermodel e irá pegar a senha )
-        // ela quebrou o cód em 2 para não quebrar no final, fiz o mesmo
-        // toCharArray transforma a senha em um Array  de caracteres
         var passwordHash = BCrypt.withDefaults()
         .hashToString(12, userModel.getPassword().toCharArray());
 
