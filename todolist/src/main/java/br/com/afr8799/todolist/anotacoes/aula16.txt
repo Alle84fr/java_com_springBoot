@@ -1,0 +1,218 @@
+Realizando Filtro
+
+filtro que valide se usuário está ou não cadastrado
+
+no apiDog tem parte de Auth = autentificação - usaremos Basic Auth
+
+para o usuário cadastrar tarefa ele deve passar informações dele
+
+com este cadastro não será passado o id user/ id usuário
+
+se ele não estiver cadastrado, não faz nada
+
+para autentificação
+
+criar folder -todolist -> filter
+new file - FilterTaskAuth.java
+
+_________________________________________________ cód FilterTaskAuth
+
+package br.com.afr8799.todolist.filter;
+
+import java.io.IOException;
+
+import org.springframework.stereotype.Component;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+
+// do jakarta.servevlet
+// servelet base para os frames
+
+// selecionar nome file -> ctrl . -> add unimplementd methods -> enter ->  add o método direto -> só arruma
+//além dos imports, apareceu
+    // @Override
+    // public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2)
+    //         throws IOException, ServletException {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'doFilter'");
+    // }
+
+// arrumar  ServletRequest request, ServletResponse response, FilterChain chain) - todos do filter
+// deletar -> throw new UnsupportedOperationException("Unimplemented method 'doFilter'");
+
+// toda classe que será gerenciada pelo spring deve ter coponent (clase mais genérica)
+@Component
+public class FilterTaskAuth implements Filter{
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+    
+    // executar ação podendo bloquear ou seguir
+
+    // ServletRequest reques - requisição/pedido
+    // ServletResponse response - retorno/resposta
+    // FilterChain chai - filtro, o que será repassado
+
+    //ATALHO PARA CHAMAR SYSTEM.OUT = SYSOUT - sysout
+    System.out.println("Chegou no filtro");
+    
+
+    //caminho que dá certo/ seguir
+    chain.doFilter(request, response);
+    }
+
+   
+}
+
+// rodar aplicação
+
+// apidog - new request - post - http://localhost:8080/tasks/ - auth - type = basic Auth - send
+    
+// tentativa 1 - deu 400 - 
+// {
+//     "timestamp": "2025-07-04T19:45:27.039+00:00",
+//     "status": 400,
+//     "error": "Bad Request",
+//     "path": "/tasks/"
+// }
+// no terminal
+// 2025-07-04T16:45:27.024-03:00  WARN 14836 --- [nio-8080-exec-2] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: Required request body is missing: public br.com.afr8799.todolist.task.TaskModel br.com.afr8799.todolist.task.TaskController.create(br.com.afr8799.todolist.task.TaskModel)]
+// "Required request body is missing" (O corpo da requisição é obrigatório e está faltando).
+
+//           COMO ARRUMEI
+
+// !!! APIDOG - CRIEI POST COM http://localhost:8080/tasks/ , SEM SAIR, MUDEI PARA AUTH E DIZ TODO O MESMO CAMINHHO ESCRITO NA PARTE DE CIMA - RODOU 200 - ACHO QUE DEVE CRIA O CORPO DO TASK 1° E NA MESMA ABA, O AUTH E NO TERMINAL DEU CHEGOU NO FILTER E CONTROLLER!!!!
+
+_________________________________________________ cód TaskController
+
+@RestController
+@RequestMapping("/tasks")
+public class TaskController {
+    
+    @Autowired
+    private ITaskRepository taskRespository;
+    
+    @PostMapping("/")
+    public TaskModel create(@RequestBody TaskModel taskModel) {
+
+        //para verificar funconamento
+        System.out.println("Chegou cno controller");
+
+        var task = this.taskRespository.save(taskModel);
+        return task;
+
+    }
+}
+
+// ao dar send - com o filtertaskAuth feito - aula 16 - dá 200 e chegou no filtro e Controller
+// lembrando que é :
+// post -> localhost:8080/tasks/
+// body - json
+// {
+//     "idUsuario": "8952e1a3-2025-4616-9551-069f58d103c7",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-06-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+//     "prioridade": "média"
+// }
+
+_________________________________________________ cód UserController
+
+
+@RestController
+@RequestMapping ("/users")
+
+
+public class UserController {
+    
+    @Autowired
+    private IUserRepository userREpository;
+
+   
+    @PostMapping("/")
+    public ResponseEntity create(@RequestBody UserModel userModel) {
+        
+        var user = this.userREpository.findByUsername(userModel.getUsername());
+
+       
+        if(user != null) {
+            return ResponseEntity.status(400).body("BAD_REQUEST - Usuário já cadastrado");
+            
+        }
+
+        var passwordHash = BCrypt.withDefaults()
+        .hashToString(12, userModel.getPassword().toCharArray());
+
+        userModel.setPassword(passwordHash);
+
+        var userCreated =  this.userREpository.save(userModel);
+        return ResponseEntity.status(200).body(userCreated);
+    }
+}
+
+// ao dar send - com o filtertaskAuth feito - aula 16 - dá 200 e chegou no filtro 
+// lembrando que é :
+// post -> localhost:8080/users/
+// body - json
+// {
+//     "username": "Ale",
+//     "name": "ALessa",
+//     "password": "abacate"
+// }
+//retorno do id = 8952e1a3-2025-4616-9551-069f58d103c7
+
+
+
++++++++++++++++++++++++ obser fora da aula
+
+mudar cor do color theme
+
+Ctrl + Shift + P
+ "Color Theme" e selecione "Preferences: Color Theme".
+selecionei dark+
+
+.....
+
+setting - workbench - appearence - color theme - dark+
+parte superior oping settings.json
+
+    "workbench.preferredHighContrastColorTheme": "Default Dark Modern",
+    "workbench.preferredHighContrastLightColorTheme": "Red",
+    "docker.extension.dockerEngineAvailabilityPrompt": false,
+    "workbench.settings.openDefaultSettings": true,
+    "explorer.compactFolders": false,
+    "scm.compactFolders": false,
+    "workbench.colorTheme": "Default Dark+",
+    "editor.tokenColorCustomizations": {
+        "[Default Dark+]": {
+            "textMateRules": [
+                {
+                    "scope": "comment", //comentários, cores
+                    "settings": {
+                        "foreground": "#515151"
+                    }
+                },
+                {
+                    "scope": "invalid",
+                    "settings": {
+                        "foreground": "#db5353"
+                    }
+                }
+            ]
+        }
+    },
+    //espaço entre linhas    
+    "editor.lineHeight": 24,
+    //Experimente valores como 24, 26, 28, 30. Quanto maior, mais espaço.
+    "editor.letterSpacing": 1.5, // Experimente valores como 0.2, 0.5, 1.0. Use valores decimais.
+    "editor.fontSize": 16, // Experimente valores como 14, 16, 18, etc.
+    // ... o restante das suas configurações ...
+
+    
+}

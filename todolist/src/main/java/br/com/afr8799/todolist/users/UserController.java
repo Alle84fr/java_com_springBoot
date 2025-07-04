@@ -2,9 +2,6 @@ package br.com.afr8799.todolist.users;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,3 +41,13 @@ public class UserController {
     }
 }
 
+// ao dar send - com o filtertaskAuth feito - aula 16 - dá 200 e chegou no filtro 
+// lembrando que é :
+// post -> localhost:8080/users/
+// body - json
+// {
+//     "username": "Ale",
+//     "name": "ALessa",
+//     "password": "abacate"
+// }
+//retorno do id = 8952e1a3-2025-4616-9551-069f58d103c7

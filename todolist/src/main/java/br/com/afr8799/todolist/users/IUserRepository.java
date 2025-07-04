@@ -1,8 +1,8 @@
 package br.com.afr8799.todolist.users;
 
 import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
 
 
 //public interface IUserREpository extends JpaRepository<UserModel, UUID> {
@@ -14,4 +14,4 @@ public interface IUserRepository extends JpaRepository<UserModel, UUID> {
 
 }
 
-// ir para user controller
+// calor
