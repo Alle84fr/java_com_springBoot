@@ -1,70 +1,75 @@
 package br.com.afr8799.todolist.filter;
 
 import java.io.IOException;
+import java.util.Base64;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-// do jakarta.servevlet
-// servelet base para os frames
 
-// selecionar nome file -> ctrl . -> add unimplementd methods -> enter ->  add o método direto -> só arruma
-//além dos imports, apareceu
-    // @Override
-    // public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2)
-    //         throws IOException, ServletException {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'doFilter'");
-    // }
-
-// arrumar  ServletRequest request, ServletResponse response, FilterChain chain) - todos do filter
-// deletar -> throw new UnsupportedOperationException("Unimplemented method 'doFilter'");
-
-// toda classe que será gerenciada pelo spring deve ter coponent (clase mais genérica)
 @Component
-public class FilterTaskAuth implements Filter{
+public class FilterTaskAuth extends OncePerRequestFilter{
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-    
-    // executar ação podendo bloquear ou seguir
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
-    // ServletRequest reques - requisição/pedido
-    // ServletResponse response - retorno/resposta
-    // FilterChain chai - filtro, o que será repassado
+                
+                var autoriza = request.getHeader("Authorization");
+                   
+                //antes era user_password
+                var authDecoded = autoriza.substring("Basic".length()).trim();
 
-    //ATALHO PARA CHAMAR SYSTEM.OUT = SYSOUT - sysout
-    System.out.println("Chegou no filtro");
-    
+                //decoder
+                // este comando gerará um decode, criadno array de bytes- array[]
+                byte[] autoDecode = Base64.getDecoder().decode(authDecoded);
+            
+                //o restorno é assim [B@4bd91d42 - para entendermos o que é, transformar em string
+                var convetStr = new String(autoDecode);
 
-    //caminho que dá certo/ seguir
-    chain.doFilter(request, response);
-    }
+                // antes era pass_word
+                System.out.println(autoDecode);
+                System.out.println(convetStr);
+                
+                // retorno
+                // Authorization
+                // Basic QWxlOmFiYWNhdGU=
+                // [B@4bd91d42
 
-   
+                // retorno com con string
+                // Authorization
+                // Basic QWxlOmFiYWNhdGU=
+                // [B@6662a5a7
+                // Ale:abacate
+
+                //dividir o string em arrays, tendo base o :
+                // usa split(), da mesma forma que no .py
+                // String[] = converte em array a string
+                // credencials = nome da variável
+                // credencial[0} pega no índice zero, 1° elemento
+                String[] credencials = convetStr.split(":");
+                String username = credencials[0];
+                String password = credencials[1];
+
+                // dei um sout - um SOUT
+                //desceu com esta parte
+                System.out.println("Authorization");
+                System.out.println(username);
+                System.out.println(password);
+
+                //retorno
+                // [B@5e1191f4
+                // Ale:abacate
+                // Authorization
+                // Ale
+                // abacate
+
+            }
 }
 
-// rodar aplicação
 
-// apidog - new request - post - http://localhost:8080/tasks/ - auth - type = basic Auth - send
-    
-// tentativa 1 - deu 400 - 
-// {
-//     "timestamp": "2025-07-04T19:45:27.039+00:00",
-//     "status": 400,
-//     "error": "Bad Request",
-//     "path": "/tasks/"
-// }
-// no terminal
-// 2025-07-04T16:45:27.024-03:00  WARN 14836 --- [nio-8080-exec-2] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: Required request body is missing: public br.com.afr8799.todolist.task.TaskModel br.com.afr8799.todolist.task.TaskController.create(br.com.afr8799.todolist.task.TaskModel)]
-// "Required request body is missing" (O corpo da requisição é obrigatório e está faltando).
-
-//           COMO ARRUMEI
-
-// !!! APIDOG - CRIEI POST COM http://localhost:8080/tasks/ , SEM SAIR, MUDEI PARA AUTH E DIZ TODO O MESMO CAMINHHO ESCRITO NA PARTE DE CIMA - RODOU 200 - ACHO QUE DEVE CRIA O CORPO DO TASK 1° E NA MESMA ABA, O AUTH E NO TERMINAL DEU CHEGOU NO FILTER E CONTROLLER!!!!
