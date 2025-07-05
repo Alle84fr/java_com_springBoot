@@ -3,9 +3,12 @@ package br.com.afr8799.todolist.filter;
 import java.io.IOException;
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import br.com.afr8799.todolist.users.IUserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +18,11 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class FilterTaskAuth extends OncePerRequestFilter{
 
+    // temos o repositório IUserRepository.java que tem find username - vamos usar-lo para validar
+    // lembrando que anotation/decorador Autowired é para "trazer automaticamete objetos de uma classe"
+    @Autowired
+    private IUserRepository userRepository;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -22,52 +30,58 @@ public class FilterTaskAuth extends OncePerRequestFilter{
                 
                 var autoriza = request.getHeader("Authorization");
                    
-                //antes era user_password
                 var authDecoded = autoriza.substring("Basic".length()).trim();
 
-                //decoder
-                // este comando gerará um decode, criadno array de bytes- array[]
+
                 byte[] autoDecode = Base64.getDecoder().decode(authDecoded);
             
-                //o restorno é assim [B@4bd91d42 - para entendermos o que é, transformar em string
+
                 var convetStr = new String(autoDecode);
 
-                // antes era pass_word
+
                 System.out.println(autoDecode);
                 System.out.println(convetStr);
                 
-                // retorno
-                // Authorization
-                // Basic QWxlOmFiYWNhdGU=
-                // [B@4bd91d42
 
-                // retorno com con string
-                // Authorization
-                // Basic QWxlOmFiYWNhdGU=
-                // [B@6662a5a7
-                // Ale:abacate
-
-                //dividir o string em arrays, tendo base o :
-                // usa split(), da mesma forma que no .py
-                // String[] = converte em array a string
-                // credencials = nome da variável
-                // credencial[0} pega no índice zero, 1° elemento
                 String[] credencials = convetStr.split(":");
                 String username = credencials[0];
                 String password = credencials[1];
 
-                // dei um sout - um SOUT
-                //desceu com esta parte
-                System.out.println("Authorization");
-                System.out.println(username);
-                System.out.println(password);
+                //validar existência do usuário
 
-                //retorno
-                // [B@5e1191f4
-                // Ale:abacate
-                // Authorization
-                // Ale
-                // abacate
+                //caminho feliz
+                var usuario = this.userRepository.findByUsername(username);
+
+                //caminho erro/ se ele não existir no bd
+                if(usuario == null) {
+                    response.sendError(401, "Usuário não encontrado");
+                } // se ele existir, validaçãlo
+                else {
+
+                    // validar senha
+                    // to.CharArray() é para converter p password em array, que é o tipo que deverá ser recebido
+                    var passwVerify = BCrypt.verifyer().verify(password.toCharArray(), usuario.getPassword());
+
+                    //veridicação da senha - true = correta e false=incorreta
+
+                    //se for verdadeira - if -  neste caso não precisa por true, é implícito
+                    if(passwVerify.verified) {
+
+                        filterChain.doFilter(request, response);
+                    } else {
+                        response.sendError(401);
+                    }
+
+                    // irá dar erro devido a não especiicação da rota, próxima aula isso será resolvido
+                    // o meu 400
+                }
+
+                //validar a senha
+                // não sei como ficou este cód, terei de ver na próxima aula
+                var senha = this.userRepository.findByUsername(password);
+
+                // tinha deletado sem querer
+                
 
             }
 }
