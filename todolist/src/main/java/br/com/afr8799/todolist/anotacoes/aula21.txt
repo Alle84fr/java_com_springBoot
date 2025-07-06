@@ -1,3 +1,252 @@
+Validar horas
+
+ao cadastrar não valida, apenas atribbui se está autenticado ou não
+
+Até aqui, dá para cadastrar eventos cujo a "data de entrega" já tenha se esgotado
+
+Ao validar as horas, este evento/cadastro não será aceito com atraso
+
+___________________________________________________________ cós TaskController - apenas data inicio
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+
+@RestController
+@RequestMapping("/tasks")
+public class TaskController {
+    
+    @Autowired
+    private ITaskRepository taskRespository;
+    
+    @PostMapping("/")
+
+    // antes era public TaskModel create(@RequestBody TaskModel taskModel, HttpServletRequest request)
+    public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
+
+
+        System.out.println("Chegou cno controller ");
+
+
+        var idUser = request.getAttribute("idUsuario");
+
+        taskModel.setIdUsuario((UUID) idUser);
+
+        // validar horas/data
+        // current = atual, data atual
+        // localDataTime = data e hora local
+        // .now = de agora, no momento
+        var currentDate = LocalDateTime.now();
+
+        // observar task com t minúsculo
+        // se a data de início vem DEPOIS,
+        //ex currentDate = 10/11/2025
+        //   data inicio = 10/10/2025
+        // vê se a data passou, se passou, não dá mais para fazer
+        // se ainda não passou, ok
+        if(currentDate.isAfter(taskModel.getInicio())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data passda, favor por data futura, pós data de abertura");
+        }
+
+        var task = this.taskRespository.save(taskModel);
+        // status bodyBuilser (int status) - return ResponseEntity.status(200); ou
+        // httpStatus apenas
+        return ResponseEntity.status(HttpStatus.OK).body(task);
+
+    }
+}
+
+
+// post localhost:8080/users/ 
+// {
+//      "username": "Ales",
+//      "name": "ALes",
+//      "password": "abacates"
+// }
+// retorno 200
+// {
+//     "id": "9a7e0ea4-5b89-4edd-bd36-354cc9da08d4",
+//     "username": "Ales",
+//     "name": "ALes",
+//     "password": "$2a$12$WZQJ056pGxr.nNvCmGBLNetQlMUW0dwBOmgACJs.oMILn7pzuZ212",
+//     "createdAt": "2025-07-06T13:36:55.554451"
+// }
+// sem retono no terminal
+
+// post localhost:8080/tasks/ body jason 
+// {
+//     "idUsuario": "20d8c67d-2d19-4938-89d4-93ba6522bff1",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-06-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+//     "prioridade": "média"
+// }
+// data de hoje, atual
+// auth username Aler password abacates - SEND
+
+// retorno
+// Data deve ser igual ou antes da data atual
+
+// agora início ontem
+//     "inicio": "2025-05-30T23:18:00",
+// retorno
+// Data deve ser igual ou antes da data atual
+
+// agora pós ontem
+//     "inicio": "2025-07-30T23:18:00",
+// retorno
+// {
+//     "id": "53d1393b-0114-4cb2-93c0-3a04b052c7df",
+//     "idUsuario": "9a7e0ea4-5b89-4edd-bd36-354cc9da08d4",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-07-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+//     "prioridade": "média",
+//     "createdAt": "2025-07-06T13:40:24.640367"
+// }
+
+___________________________________________________________ cós TaskController - inicio e fim
+
+package br.com.afr8799.todolist.task;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+
+@RestController
+@RequestMapping("/tasks")
+public class TaskController {
+    
+    @Autowired
+    private ITaskRepository taskRespository;
+    
+    @PostMapping("/")
+
+    // antes era public TaskModel create(@RequestBody TaskModel taskModel, HttpServletRequest request)
+    public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
+
+
+        System.out.println("Chegou cno controller ");
+
+
+        var idUser = request.getAttribute("idUsuario");
+
+        taskModel.setIdUsuario((UUID) idUser);
+
+        // validar horas/data
+        // current = atual, data atual
+        // localDataTime = data e hora local
+        // .now = de agora, no momento
+        var currentDate = LocalDateTime.now();
+
+        // observar task com t minúsculo
+        // se a data de início vem DEPOIS,
+        //ex currentDate = 10/11/2025
+        //   data inicio = 10/10/2025
+        // vê se a data passou, se passou, não dá mais para fazer
+        // se ainda não passou, ok
+        // && = e = and
+        // || = ou = or
+        // OBSERVAR QUE AS DATAS SÃO MAIORES E NÃO IGUAIS A DATA AUTUAL
+        if(currentDate.isAfter(taskModel.getInicio()) || currentDate.isAfter(taskModel.getFim())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data inválida, favor por data futura, pós data de abertura");
+        }
+
+        var task = this.taskRespository.save(taskModel);
+        // status bodyBuilser (int status) - return ResponseEntity.status(200); ou
+        // httpStatus apenas
+        return ResponseEntity.status(HttpStatus.OK).body(task);
+
+    }
+}
+
+
+// post localhost:8080/users/ 
+// {
+//      "username": "Ales",
+//      "name": "ALes",
+//      "password": "abacates"
+// }
+// retorno 200
+// {
+//     "id": "9a7e0ea4-5b89-4edd-bd36-354cc9da08d4",
+//     "username": "Ales",
+//     "name": "ALes",
+//     "password": "$2a$12$WZQJ056pGxr.nNvCmGBLNetQlMUW0dwBOmgACJs.oMILn7pzuZ212",
+//     "createdAt": "2025-07-06T13:36:55.554451"
+// }
+// sem retono no terminal
+
+// post localhost:8080/tasks/ body jason 
+// {
+//     "idUsuario": "20d8c67d-2d19-4938-89d4-93ba6522bff1",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-06-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+//     "prioridade": "média"
+// }
+// datas corretas 
+//     "inicio": "2025-07-30T23:18:00",
+//     "fim": "2025-08-01T00:18:00",
+// auth username Aler password abacates - SEND
+// retorno
+// {
+//     "id": "623ade7d-c099-425f-8847-7d53e8d4239a",
+//     "idUsuario": "760c8dbe-2248-4d62-a524-6d7b07f75c91",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-07-30T23:18:00",
+//     "fim": "2025-08-01T00:18:00",
+//     "prioridade": "média",
+//     "createdAt": "2025-07-06T13:53:29.654943"
+// }
+
+// datas inicio  correto, fim mesma data do inícioo 
+//     "inicio": "2025-07-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+// auth username Aler password abacates - SEND
+// retorno = Data inválida, favor por data futura, pós data de abertura
+
+// datas inicio  mesma de hoje , fim correta 
+//     "inicio": "2025-06-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+// auth username Aler password abacates - SEND
+// retorno = Data inválida, favor por data futura, pós data de abertura
+
+// datas inicio e fim incorretas 
+//     "inicio": "2025-04-30T23:18:00",
+//     "fim": "2025-05-01T00:18:00",
+// auth username Aler password abacates - SEND
+// retorno = Data inválida, favor por data futura, pós data de abertura
+
+___________________________________________________________ cós TaskController - inicio e fim e tratamentno horas
+
+// NO MEU QUANDO COLOCO  DATA DE INICIO  MAIOR QUE FIM DÁ 400
+// MAS A PROFESSORA ADD UM TRATAMENTO PARA QUE NÃO OCORRA
+
 package br.com.afr8799.todolist.task;
 
 import java.time.LocalDateTime;
