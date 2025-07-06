@@ -1,0 +1,17 @@
+Setando atributos na request
+
+setar = to set = atribuir, definir, configurar, ajustar
+setar = DAR VALOR A algo
+ex:
+age =
+setar
+age = 41
+
+OU ARMAZENAR EM UM LOCAL 
+ex:
+quardar o id em uma variável ou diretamente no dispositivo do usuário
+aqui define e torna o id mais disponível para o resto do aplicativo
+
+utilizar a auth para passar o id, o usuário não o verá mais
+
+_________________________________________________ cód 

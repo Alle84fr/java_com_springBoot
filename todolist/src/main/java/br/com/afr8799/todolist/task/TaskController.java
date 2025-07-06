@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 
 @RestController
 @RequestMapping("/tasks")
@@ -15,10 +17,13 @@ public class TaskController {
     private ITaskRepository taskRespository;
     
     @PostMapping("/")
-    public TaskModel create(@RequestBody TaskModel taskModel) {
 
-        //para verificar funconamento
-        System.out.println("Chegou cno controller");
+    //  parar recuperar o atributo - id http...
+    public TaskModel create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
+
+        //para verificar o request
+        // lembrar que + concatena
+        System.out.println("Chegou cno controller " + request.getAttribute("idUsuario"));
 
         var task = this.taskRespository.save(taskModel);
         return task;
