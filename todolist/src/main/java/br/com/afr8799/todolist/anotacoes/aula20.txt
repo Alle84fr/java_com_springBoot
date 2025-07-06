@@ -14,4 +14,212 @@ aqui define e torna o id mais disponível para o resto do aplicativo
 
 utilizar a auth para passar o id, o usuário não o verá mais
 
-_________________________________________________ cód 
+_________________________________________________ cód TaskController 
+
+import java.io.IOException;
+import java.util.Base64;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import br.com.afr8799.todolist.users.IUserRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@Component
+public class FilterTaskAuth extends OncePerRequestFilter {
+
+    @Autowired
+    private IUserRepository userRepository;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+
+        var servletPath = request.getServletPath();
+
+       
+        if (servletPath.equals("/tasks/")) {
+
+            var autoriza = request.getHeader("Authorization");
+
+            var authEcoded = autoriza.substring("Basic".length()).trim();
+
+            byte[] autoDecode = Base64.getDecoder().decode(authEcoded);
+
+            var convetStr = new String(autoDecode);
+
+            String[] credencials = convetStr.split(":");
+            String username = credencials[0];
+            String password = credencials[1];
+
+                var usuario = this.userRepository.findByUsername(username);
+
+                if (usuario == null) {
+                    response.sendError(401);
+                } else {
+                    var passwVerify = BCrypt.verifyer().verify(password.toCharArray(), usuario.getPassword());
+                    
+                    if(passwVerify.verified) {
+
+                        //forças que os atributos -HttpServletRequest request, HttpServletResponse response, FilterChain filterChain- set i id - e no controller recupere
+                        //request é o que está vido e response o que está enviando para usuário
+                        //request do http
+                        //setar o atributo idusuario com o valor do id usuário
+                        request.setAttribute("idUsuario", usuario.getId());
+                        // ir para takcontroller
+                        filterChain.doFilter(request, response);
+                    } else {
+                        response.sendError(401);
+                    }
+                }
+
+        } else {
+            
+            filterChain.doFilter(request, response);
+        }
+    }
+}
+
+// post - localhost:8080/users/ - body - json - 200
+// {
+//      "username": "Ales",
+//      "name": "ALes",
+//      "password": "abacates"
+// }
+// retorno 200
+// {
+//     "id": "dd2ba891-12ae-4312-87a4-e1d6e1ce102a",
+//     "username": "Ales",
+//     "name": "ALes",
+//     "password": "$2a$12$fxJ9qoMZqJJikx5ue0HTKeeNukl9.fv9qBoCXJqCcPGy3b/kHFpFm",
+//     "createdAt": "2025-07-06T12:21:04.984118"
+// }
+
+
+//post - localhost:8080/tasks/
+//tirar linha do id
+// {
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-06-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+//     "prioridade": "média"
+// }
+// ir para // auth - basic - username(ale) - password (abacate) e só agora dar Send
+// retorno apidog
+// {
+//     "id": "d40ad8fc-0972-4ff0-87d4-550a6a88cc37",
+//     "idUsuario": null,
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-06-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+//     "prioridade": "média",
+//     "createdAt": "2025-07-06T12:22:03.754491"
+// }
+// retorno terminal
+// Chegou cno controller dd2ba891-12ae-4312-87a4-e1d6e1ce102a
+
+// id do terminal e do user são iguais e não muda 
+// "id": "dd2ba891-12ae-4312-87a4-e1d6e1ce102a",
+//        dd2ba891-12ae-4312-87a4-e1d6e1ce102a
+
+// o id do task é diferente, até o momento - 4.18 da aula, aqui o id não foi setado no taskmolde
+// retorno apidog do tasks - 200
+// {
+//     "id": "b5c72574-f409-496e-a290-123fb5eb16b7",
+//     "idUsuario": "17c6c67d-2d19-4938-89d4-93ba6522bff1",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-06-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+//     "prioridade": "média",
+//     "createdAt": "2025-07-06T12:59:01.79754"
+// }
+// retorno do user -200
+// { 
+//     "id": "17c6c67d-2d19-4938-89d4-93ba6522bff1",
+//     "username": "Ales",
+//     "name": "ALes",
+//     "password": "$2a$12$oHwaZxQk0y9bQ.nW42qn2u7qFm1oUwvtVc0X949ZHmI0vFk/Dxkw.",
+//     "createdAt": "2025-07-06T12:58:41.470688"
+// }
+
+// OBSERVAR QUE ANTES DE SET TASKMOLDE O "idUsuario": null, DEPOIS "idUsuario": "17c6c67d-2d19-4938-89d4-93ba6522bff1",
+
+// se o usuário passar outro Id, ficará o mesmo criado, é mais seguro
+// ex
+// {
+//     "idUsuario": "20d8c67d-2d19-4938-89d4-93ba6522bff1",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-06-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+//     "prioridade": "média"
+// }
+// send
+// retorno .... "idUsuario": "17c6c67d-2d19-4938-89d4-93ba6522bff1", o id original/oficial
+
+_________________________________________________ cód FilterTaskAuth
+
+package br.com.afr8799.todolist.task;
+
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+
+@RestController
+@RequestMapping("/tasks")
+public class TaskController {
+    
+    @Autowired
+    private ITaskRepository taskRespository;
+    
+    @PostMapping("/")
+
+    //  parar recuperar o atributo - id http...
+    public TaskModel create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
+
+        //para verificar o request
+        // lembrar que + concatena
+        System.out.println("Chegou cno controller ");
+
+        // to set in taskmodel
+        var idUser = request.getAttribute("idUsuario");
+        // aqui espera retorno (uid mas está retornando request set atrtibute - deve converter amém
+        // abre parênteses (, coloca U, apracerá uma lista, selecione UUID (java) fecha parênteses
+        // aqui fala que o iduser é agora do tipo uuid
+        taskModel.setIdUsuario((UUID) idUser);
+
+        var task = this.taskRespository.save(taskModel);
+        return task;
+
+    }
+}
+
+// ao dar send - com o filtertaskAuth feito - aula 16 - dá 200 e chegou no filtro e Controller
+// lembrando que é :
+// post -> localhost:8080/tasks/
+// body - json
+// {
+//     "idUsuario": "8952e1a3-2025-4616-9551-069f58d103c7",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-06-30T23:18:00",
+//     "fim": "2025-07-01T00:18:00",
+//     "prioridade": "média"
+// }
+

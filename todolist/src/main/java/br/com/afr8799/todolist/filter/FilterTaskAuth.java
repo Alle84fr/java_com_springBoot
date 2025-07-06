@@ -51,12 +51,8 @@ public class FilterTaskAuth extends OncePerRequestFilter {
                     
                     if(passwVerify.verified) {
 
-                        //forças que os atributos -HttpServletRequest request, HttpServletResponse response, FilterChain filterChain- set i id - e no controller recupere
-                        //request é o que está vido e response o que está enviando para usuário
-                        //request do http
-                        //setar o atributo idusuario com o valor do id usuário
                         request.setAttribute("idUsuario", usuario.getId());
-                        // ir para takcontroller
+                        
                         filterChain.doFilter(request, response);
                     } else {
                         response.sendError(401);
@@ -70,48 +66,3 @@ public class FilterTaskAuth extends OncePerRequestFilter {
     }
 }
 
-// post - localhost:8080/users/ - body - json - 200
-// {
-//      "username": "Ales",
-//      "name": "ALes",
-//      "password": "abacates"
-// }
-// retorno 200
-// {
-//     "id": "dd2ba891-12ae-4312-87a4-e1d6e1ce102a",
-//     "username": "Ales",
-//     "name": "ALes",
-//     "password": "$2a$12$fxJ9qoMZqJJikx5ue0HTKeeNukl9.fv9qBoCXJqCcPGy3b/kHFpFm",
-//     "createdAt": "2025-07-06T12:21:04.984118"
-// }
-
-
-//post - localhost:8080/tasks/
-//tirar linha do id
-// {
-//     "descricao": "aprendendo java co rocketseat",
-//     "titulo": "Cadastro tarefa",
-//     "inicio": "2025-06-30T23:18:00",
-//     "fim": "2025-07-01T00:18:00",
-//     "prioridade": "média"
-// }
-// ir para // auth - basic - username(ale) - password (abacate) e só agora dar Send
-// retorno apidog
-// {
-//     "id": "d40ad8fc-0972-4ff0-87d4-550a6a88cc37",
-//     "idUsuario": null,
-//     "descricao": "aprendendo java co rocketseat",
-//     "titulo": "Cadastro tarefa",
-//     "inicio": "2025-06-30T23:18:00",
-//     "fim": "2025-07-01T00:18:00",
-//     "prioridade": "média",
-//     "createdAt": "2025-07-06T12:22:03.754491"
-// }
-// retorno terminal
-// Chegou cno controller dd2ba891-12ae-4312-87a4-e1d6e1ce102a
-
-// id do terminal e do user são iguais e não muda 
-// "id": "dd2ba891-12ae-4312-87a4-e1d6e1ce102a",
-//        dd2ba891-12ae-4312-87a4-e1d6e1ce102a
-
-// o id do task é diferente, até o momento - 4.18 da aula, aqui o id não foi setado no taskmolde
