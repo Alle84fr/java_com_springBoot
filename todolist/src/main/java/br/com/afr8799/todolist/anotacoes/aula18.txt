@@ -23,7 +23,7 @@ public class FilterTaskAuth extends OncePerRequestFilter{
     // temos o repositório IUserRepository.java que tem find username - vamos usar-lo para validar
     // lembrando que anotation/decorador Autowired é para "trazer automaticamete objetos de uma classe"
     @Autowired
-    //
+    
     private IUserRepository userRepository;
 
     @Override
