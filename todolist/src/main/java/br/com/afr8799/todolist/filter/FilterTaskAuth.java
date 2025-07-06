@@ -18,72 +18,60 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class FilterTaskAuth extends OncePerRequestFilter{
 
-    // temos o repositório IUserRepository.java que tem find username - vamos usar-lo para validar
-    // lembrando que anotation/decorador Autowired é para "trazer automaticamete objetos de uma classe"
+
     @Autowired
     private IUserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
 
-                
+            // antes de qualquer coisa fazer verificação de rotas
+            var servletPath = request.getServletPath();
+
+            //se for igual "/tasks - faz toda opera já escrita
+            if(servletPath.equals("/tasks")) {
+
                 var autoriza = request.getHeader("Authorization");
-                   
-                var authDecoded = autoriza.substring("Basic".length()).trim();
+                    
+                var authEcoded = autoriza.substring("Basic".length()).trim();
 
 
-                byte[] autoDecode = Base64.getDecoder().decode(authDecoded);
-            
+                byte[] autoDecode = Base64.getDecoder().decode(authEcoded);
+                
 
                 var convetStr = new String(autoDecode);
-
-
-                System.out.println(autoDecode);
-                System.out.println(convetStr);
-                
+                    
 
                 String[] credencials = convetStr.split(":");
                 String username = credencials[0];
                 String password = credencials[1];
 
-                //validar existência do usuário
-
-                //caminho feliz
                 var usuario = this.userRepository.findByUsername(username);
 
-                //caminho erro/ se ele não existir no bd
                 if(usuario == null) {
-                    response.sendError(401, "Usuário não encontrado");
-                } // se ele existir, validaçãlo
-                else {
-
-                    // validar senha
-                    // to.CharArray() é para converter p password em array, que é o tipo que deverá ser recebido
+                        response.sendError(401);
+                } else {
                     var passwVerify = BCrypt.verifyer().verify(password.toCharArray(), usuario.getPassword());
 
-                    //veridicação da senha - true = correta e false=incorreta
-
-                    //se for verdadeira - if -  neste caso não precisa por true, é implícito
                     if(passwVerify.verified) {
 
                         filterChain.doFilter(request, response);
                     } else {
                         response.sendError(401);
                     }
-
-                    // irá dar erro devido a não especiicação da rota, próxima aula isso será resolvido
-                    // o meu 400
                 }
 
-                //validar a senha
-                // não sei como ficou este cód, terei de ver na próxima aula
-                var senha = this.userRepository.findByUsername(password);
+                    var senha = this.userRepository.findByUsername(password);
 
-                // tinha deletado sem querer
-                
-
+            } else {
+                filterChain.doFilter(request, response);
             }
+        }
 }
 
+// post - localhost:8080/users/ - body - json - 200
 
+// post - localhost:8080/tasks/ - Auth - Basic Auth(type) - Ale (username) - abacate  (password) - 200
+
+// // post - localhost:8080/tasks/ - Auth - Basic Auth(type) - Ale (username) - senhaErrada  (password) - 401

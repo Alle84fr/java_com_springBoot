@@ -113,14 +113,14 @@ public class TaskController {
 // lembrando que é :
 // post -> localhost:8080/tasks/
 // body - json
-// {
-//     "idUsuario": "8952e1a3-2025-4616-9551-069f58d103c7",
-//     "descricao": "aprendendo java co rocketseat",
-//     "titulo": "Cadastro tarefa",
-//     "inicio": "2025-06-30T23:18:00",
-//     "fim": "2025-07-01T00:18:00",
-//     "prioridade": "média"
-// }
+ {
+     "idUsuario": "8952e1a3-2025-4616-9551-069f58d103c7",
+     "descricao": "aprendendo java co rocketseat",
+     "titulo": "Cadastro tarefa",
+     "inicio": "2025-06-30T23:18:00",
+     "fim": "2025-07-01T00:18:00",
+     "prioridade": "média"
+ }
 
 _________________________________________________ cód UserController
 
@@ -160,11 +160,11 @@ public class UserController {
 // lembrando que é :
 // post -> localhost:8080/users/
 // body - json
-// {
-//     "username": "Ale",
-//     "name": "ALessa",
-//     "password": "abacate"
-// }
+{
+     "username": "Ale",
+     "name": "ALessa",
+     "password": "abacate"
+}
 //retorno do id = 8952e1a3-2025-4616-9551-069f58d103c7
 
 
