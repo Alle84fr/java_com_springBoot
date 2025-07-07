@@ -1,0 +1,206 @@
+Listando tarefas
+
+
+________________________________________________________ cód TaskController
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.afr8799.todolist.filter.FilterTaskAuth;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
+
+@RestController
+@RequestMapping("/tasks")
+public class TaskController {
+
+    private final FilterTaskAuth filterTaskAuth;
+    
+    @Autowired
+    private ITaskRepository taskRespository;
+
+    TaskController(FilterTaskAuth filterTaskAuth) {
+        this.filterTaskAuth = filterTaskAuth;
+    }
+    
+    @PostMapping("/")
+
+
+    public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
+
+        var idUser = request.getAttribute("idUsuario");
+
+        taskModel.setIdUsuario((UUID) idUser);
+
+        var currentDate = LocalDateTime.now();
+
+        if(currentDate.isAfter(taskModel.getInicio()) || currentDate.isAfter(taskModel.getFim())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data inválida, favor por data futura, pós data de abertura");
+        }
+
+
+        if(taskModel.getInicio().isAfter(taskModel.getFim())) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("hora inválida, data de iníicio deve ser antes da de término");
+        }
+
+        //não fiz na aula anterior, ou deletei
+        var task = this.taskRespository.save(taskModel);
+        return ResponseEntity.status(HttpStatus.OK).body(task);
+    
+    }
+
+    // trazer tudo relacionado ao usuário
+   
+    public String getMethodName(@RequestParam String param) {
+        return new String();
+    }
+    
+    // estava reques - deu erro --no request doo var idUser
+    @GetMapping("/")
+    public List<TaskModel> list(HttpServletRequest request) {
+
+        // findall traz tudo, porém queremos só do user
+        // ir para ItaskRepository
+        var idUser = request.getAttribute("idUsuario");
+        var tasks = this.taskRespository.findByIdUsuario((UUID) idUser);
+        return tasks;
+            // clicar na lampada e selecionar chance to type fo list ... 
+
+    }
+}
+
+// ir para apidog
+// post - localhost:8080/users/ - body - json - 200
+// {
+//      "username": "Ale",
+//      "name": "ALes",
+//      "password": "abacates"
+// }
+//RETURN - 200
+// {
+//      "id": "463db09f-4f66-48df-a6e4-a3368faad5f6",,
+//     "username": "Ales",
+//     "name": "ALes",
+//     "password": "$2a$12$q5d8RpzBpmbqi9tajm.kuesVW9MA/QsMTKLxee2DPmONAmcyUu3Ee",
+//     "createdAt": "2025-07-06T16:33:05.079399"
+// }
+
+
+// post -> localhost:8080/tasks/
+// body - json
+// {
+//     "idUsuario": "20d8c67d-2d19-4938-89d4-93ba6522bff1",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio":"2025-07-10T20:18:00",
+//     "fim": "2025-07-11T21:19:02",
+//     "prioridade": "média"
+// }
+// send - não ir para auth
+// //RETURN - 200
+// {
+//     "id": "413abb59-39ca-4d63-8c00-6ac5f541699d",
+//     "idUsuario": "481827f6-e333-4ea0-a9b4-3b434d88cbd4",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-07-10T20:18:00",
+//     "fim": "2025-07-11T21:19:02",
+//     "prioridade": "média",
+//     "createdAt": "2025-07-06T16:29:53.55526"
+// }
+
+//criar novo request
+// get - localhost:8080/tasks/ - auth  - type (basic Auth) username (Ales) password (abacates) - SEND
+//RETURN - 400
+
+//2025-07-06T16:44:15.494-03:00  WARN 12416 --- [nio-8080-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MissingServletRequestParameterException: Required request parameter 'param' for method parameter type String is not present]
+// Required request parameter 'param' ->  algum controlador Spring está configurado para exigir um parâmetro de requisição chamado 'param'.
+// for method parameter type String -> 'param' é do tipo String.
+// is not present ->  O parâmetro 'param' não foi encontrado na requisição HTTP que chegou ao seu servidor.
+
+// alguém (ou algum sistema) tentou acessar uma das suas APIs (endpoints), mas esqueceu de incluir um dado essencial que sua API precisa para funcionar. O nome desse dado que está faltando é param.
+
+// correção
+
+// estava
+
+//     @GetMapping("/") // ESTÁ NO PUBLIC ERRADO
+//     public String getMethodName(@RequestParam String param) {
+//         return new String();
+//     }
+//     public List<TaskModel> list(HttpServletRequest request) {
+//         var idUser = request.getAttribute("idUsuario");
+//         var tasks = this.taskRespository.findByIdUsuario((UUID) idUser);
+//         return tasks;
+
+
+// deve ficar 
+
+//     public String getMethodName(@RequestParam String param) {
+//         return new String();
+//     }
+    
+//                   AQUI QUE FICA O @
+//     @GetMapping("/")
+//     public List<TaskModel> list(HttpServletRequest request) {
+//         var idUser = request.getAttribute("idUsuario");
+//         var tasks = this.taskRespository.findByIdUsuario((UUID) idUser);
+//         return tasks;
+//             
+
+// AGORA NO APIDOG
+// NO novo request
+// get - localhost:8080/tasks/ - auth  - type (basic Auth) username (Ales) password (abacates) - SEND
+// RETURN - 200
+// [
+//     {
+//         "id": "b20d18d4-2a2a-4807-8350-09a0b1f2b45e",
+//         "idUsuario": "fc859836-78fa-478b-9cde-81bd337d6854",
+//         "descricao": "aprendendo java co rocketseat",
+//         "titulo": "Cadastro tarefa",
+//         "inicio": "2025-07-10T20:18:00",
+//         "fim": "2025-07-11T21:19:02",
+//         "prioridade": "média",
+//         "createdAt": "2025-07-06T16:54:26.665342"
+//     }
+// ]
+
+// caso coloque user diferente
+// nameuser = Aleas
+// retorno 401
+// {
+//     "timestamp": "2025-07-06T20:25:09.180+00:00",
+//     "status": 401,
+//     "error": "Unauthorized",
+//     "path": "/tasks/"
+// }
+
+________________________________________________________ cód ITaskRepository
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
+public interface ITaskRepository extends JpaRepository<TaskModel, UUID> {
+    
+    // trazer tasks do id
+    // apenas digitar findByIdUsuario
+    List<TaskModel> findByIdUsuario(UUID idUsuario);
+    // voltar para taskcontroller
+}
+
+// ir para controller task

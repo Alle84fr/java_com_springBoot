@@ -1,6 +1,7 @@
 package br.com.afr8799.todolist.task;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.afr8799.todolist.filter.FilterTaskAuth;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -30,130 +34,42 @@ public class TaskController {
     
     @PostMapping("/")
 
-    // antes era public TaskModel create(@RequestBody TaskModel taskModel, HttpServletRequest request)
+
     public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
 
         var idUser = request.getAttribute("idUsuario");
 
         taskModel.setIdUsuario((UUID) idUser);
 
-        // validar horas/data
-        // current = atual, data atual
-        // localDataTime = data e hora local
-        // .now = de agora, no momento
         var currentDate = LocalDateTime.now();
 
-        // observar task com t minúsculo
-        // se a data de início vem DEPOIS,
-        //ex currentDate = 10/11/2025
-        //   data inicio = 10/10/2025
-        // vê se a data passou, se passou, não dá mais para fazer
-        // se ainda não passou, ok
-        // && = e = and
-        // || = ou = or
-        // OBSERVAR QUE AS DATAS SÃO MAIORES E NÃO IGUAIS A DATA AUTUAL
         if(currentDate.isAfter(taskModel.getInicio()) || currentDate.isAfter(taskModel.getFim())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data inválida, favor por data futura, pós data de abertura");
         }
 
-        //tratamento para ver se inicío vem sempre antes de término
+
         if(taskModel.getInicio().isAfter(taskModel.getFim())) {
-            // status http
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("hora inválida, data de iníicio deve ser antes da de término");
         }
 
+
         var task = this.taskRespository.save(taskModel);
-        // status bodyBuilser (int status) - return ResponseEntity.status(200); ou
-        // httpStatus apenas
         return ResponseEntity.status(HttpStatus.OK).body(task);
+    
+    }
+
+
+    public String getMethodName(@RequestParam String param) {
+        return new String();
+    }
+
+    @GetMapping("/")
+    public List<TaskModel> list(HttpServletRequest request) {
+
+        var idUser = request.getAttribute("idUsuario");
+        var tasks = this.taskRespository.findByIdUsuario((UUID) idUser);
+        return tasks;
 
     }
 }
-
-// no meu, datas iguais, mesmo com horas diferentes dá erro, da prof dá para criar
-
-// erro
-// 2025-07-06T14:14:22.739-03:00  WARN 26576 --- [nio-8080-exec-7] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `java.time.LocalDateTime` from String "2025-010-30T20:18:00": Failed to deserialize java.time.LocalDateTime: (java.time.format.DateTimeParseException) Text '2025-010-30T20:18:00' could not be parsed at index 7]
-
-// JSON parse error -> erro ao tentar converter (parsear) um texto JSON 
-
-// Cannot deserialize value of type java.time.LocalDateTime from String "2025-010-30T20:18:00" -> esperava receber um valor do tipo LocalDateTime (que representa data e hora sem fuso horário) -"2025-10-30T20:18:00", mas o texto JSON forneceu a string "2025-010-30T20:18:00".
-
-// Failed to deserialize java.time.LocalDateTime -> A tentativa de transformar essa string em um objeto LocalDateTime falhou.
-
-// (java.time.format.DateTimeParseException) Text '2025-010-30T20:18:00' could not be parsed at index 7 -> O motivo da falha é que o formato da data na string está incorreto, especificamente no índice 7.
-//  |0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|
-// "|2|0|2|5|-|0|1|0|-|3 |0 |T |2 |0 |: |18|: |00|"
-
-// entendo os índices e erros
-
-// 2025-07-06T14:26:07.435-03:00  WARN 17752 --- [nio-8080-exec-2] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `java.time.LocalDateTime` from String "2025-8-02T21:19:02": Failed to deserialize java.time.LocalDateTime: (java.time.format.DateTimeParseException) Text '2025-8-02T21:19:02' could not be parsed at index 5]
-// data posta "2025-8-02T21:19:02"
-//  |0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|
-//  |2|0|2|5|-|8|-|0|2|T|2 |1 |: |1 |9 |: |0 |2 |
-// na casa do índice 5 (mês que vai de 01 a 12) tem um erro - coloquei apenas 8
-
-// 2025-07-06T14:30:11.198-03:00  WARN 17752 --- [nio-8080-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `java.time.LocalDateTime` from String "2025-008-01T20:18:00": Failed to deserialize java.time.LocalDateTime: (java.time.format.DateTimeParseException) Text '2025-008-01T20:18:00' could not be parsed at index 7]
-//  |0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19
-//  |2|0|2|5|-|0|0|8|-|0|1 |T |2 |0 |: |1 |8 |: |0 |0
-
-// COMO É LIDO O ERRO 
-
-// formato da Data
-// AAAA = ano índice 0 1 2 3
-// - = sepador padrão de data, que está no ídice 4
-// MM = mês que índice 5 deve ser 0 ou 1
-//                     6 deve ser 0, 1 ou 2
-//                     observando que vai de 01 a 12
-// - = seprador que está no índice 7
-// DD = dia que está no índice 8 deve ter 0 a 3
-//                      índice 9 deve ter 0 a 9
-//                      observando regras de dias 01 a 24,30 e 31
-// T = time = padrão ISO 8601, separador da data para hora, no índice 10
-// HH = horas, vai índice 11 deve ser entre 0 e 2
-//                        12 deve ser entre 0 e 9
-//                        observando que vai de 01 as 23(FORMATO 24H) - 00 (00 = 12am = meia noite)
-// : = separador padrão, índice 13
-// mm = minutos, no índice 14 deve ter entre 0 e 5
-//                         15 deve ter entre 0 e 9
-//                         observando que 60 já vira horas
-// : = separador padrão, índice 16
-// ss = segundo que está no índice 17 deve ter entre 0 e 5
-//                                 18 deve ter entre 0 e 9
-//                         observando que 60 já vira min
-
-// ENTÃO QUANDO DÁ ERRO NO ÍNDICE 7 ONDE O PARSER ENCONTROU ERRO, PARA O CÓD A CASA ANTERIOR ESTAVA CORRETA E A QUE ESTÁ MARCANDO ESTÁ FORA DO ESPERADO DA FORMATAÇÃO
-
-// PARSER/ANALISADOR = transforma uma entrada em estrutura de dados e:
-// Análise Léxica (Scanning/Tokenizing) -> quebra em pequenas unidades chamadas tokens 
-// Análise Sintática (Parsing) -> verifica que estão orgaizados confrome a sintaxe/regra gramatical 
-// se não tiver dará erro 
-// se tiver ok criará uma árvore de sintaxe abstrata (AST)
-
-// ex
-
-// 2000-13
-// PARA NO 13 QUE ESTÁ NO ÍNDICE 7 (3)
-// ESPERA QUE SEJA DE 0 A 2
-// ERRO DADO
-// 2025-07-06T14:36:58.437-03:00  WARN 17752 --- [nio-8080-exec-8] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `java.time.LocalDateTime` from String "2025-00-01T20:18:00": Failed to deserialize java.time.LocalDateTime: (java.time.format.DateTimeParseException) Text '2025-00-01T20:18:00' could not be parsed: Invalid value for MonthOfYear (valid values 1 - 12): 0]
-
-// 2000-012
-// OU 2000-0012
-// PARA NO ÍNDICE 7 (2)
-// PORQUE O QUE SE ESPERA NO ÍNDICE 7 É UM SEPRADOR - , O QUE FOR DIFERENTE DÁ ERRO
-//   |0|1|2|3|4|5|6|7|8|
-//   |2|0|0|0|-|0|1|2|
-//   |2|0|0|0|-|0|0|1|2|
-// ERRO
-// 2025-07-06T15:23:29.535-03:00  WARN 17752 --- [nio-8080-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `java.time.LocalDateTime` from String "2025-0012-01T20:18:00": Failed to deserialize java.time.LocalDateTime: (java.time.format.DateTimeParseException) Text '2025-0012-01T20:18:00' could not be parsed at index 7]
-
-// AQUI DEVE OBSERVAR SE O ERRO É O SEPRADOR 
-// EX 
-// 2025-07:
-// CORREETO 2025-07-
-// OU SERRO NO MÊS
-// 2000-012-
-// CORRETO 2000-12-
-
-// OBSERVAR O ERRO, O ÍNDICE E A REGRA DAS "CASAS"
