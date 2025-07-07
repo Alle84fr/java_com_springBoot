@@ -26,17 +26,10 @@ public class FilterTaskAuth extends OncePerRequestFilter {
 
 
         var servletPath = request.getServletPath();
-        
-        //analisando iduser null
-        //1° retorno no terminal = path /user path /tasks/ path /taskss/03993f65-3650-44d7-ad58-5e603b1a92dc
-        // com iduser null ainda
+
         System.out.println("path " + servletPath);
-       
-        // estava servletPath.equals("/tasks/") -> igual a 
-        // agora será iniciando com
-        //pegará tanto o tasks quanto o id
-        if (servletPath.equals("/tasks/")) {
-        //if (servletPath.startsWith("/tasks/")) {
+
+        if (servletPath.startsWith("/tasks/")) {
 
             var autoriza = request.getHeader("Authorization");
 
@@ -73,19 +66,3 @@ public class FilterTaskAuth extends OncePerRequestFilter {
         }
     }
 }
-
-// retorno terminal
-// 2025-07-07T11:57:07.633-03:00  INFO 24296 --- [on(2)-127.0.0.1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
-// path /users/
-// path /tasks/
-// path /tasks/64a8482b-7a2d-4e95-97f7-2f6d7f3c68e6
-// 2025-07-07T11:57:49.082-03:00 ERROR 24296 --- [nio-8080-exec-4] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
-
-// java.lang.NullPointerException: Cannot invoke "String.substring(int)" because "autoriza" is null
-
-//                           OBS
-
-// COM EQUAL ACEITA
-//RETORNO
-// path /tasks/e2957e20-d255-448b-bd1c-5b92d9414f6d
-// idUser null

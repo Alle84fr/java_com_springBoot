@@ -77,105 +77,24 @@ public class TaskController {
 
     }
 
-    // receber informações a serem alteradas
-    //id da tarefa 
-    //ex : hhtp://local8080/tasks/id
-    // este id é uma variável do path/rota - parâmetro de rota - route parameter ou path parameter - identifica recursos
-    //{id} é o nome atributo
+
     @PutMapping("/{id}")
     public TaskModel update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
         //TODO: process PUT request
-        //pegar
+        
         var idUser = request.getAttribute("idUsuario");
-        //id usuário não estava indo
-        //sout = System.out.println() - resultado era nulo
+       
         System.out.println("idUser " + idUser);
-        // pegar id usurario
+       
         taskModel.setIdUsuario((UUID) idUser);
-        //setar id da task
+        
         taskModel.setId(id);
         return this.taskRespository.save(taskModel);
-        // ir para FilterTaskAuth.java para arrumar user null
+        
    
     }
 
 }
 
-// ir para apidog
-// post - localhost:8080/users/ - body - json - 200
-// {
-//      "username": "Ale",
-//      "name": "ALes",
-//      "password": "abacates"
-// }
-//return 200
-// {
-//     "id": "f4c3cbf6-563a-4197-a0fd-4eb0e1cfc234",
-//     "username": "Ale",
-//     "name": "ALes",
-//     "password": "$2a$12$5OCyTfy48CtsfKz1.y5zfOFqAvyhxjtYN1noqN2Ga6er2N4BZb.4W",
-//     "createdAt": "2025-07-07T11:00:02.936256"
-// }
 
-// post -> localhost:8080/tasks/
-// body - json
-// {
-    
-//     "descricao": "aprendendo java co rocketseat",
-//     "titulo": "Cadastro tarefa",
-//     "inicio": "2025-08-10T20:18:00",
-//     "fim": "2025-08-11T21:19:02",
-//     "prioridade": "alta",
-//     "createdAt": "2025-07-07T10:30:53.032889"
-// }
-// IR PARAR AUTH - USERNAME Ale PASSWORD abacates - send
-//return 200
-// {
-//     "id": "f0d9f9f5-c422-493d-ae11-b2ae86da6987",
-//     "idUsuario": "f4c3cbf6-563a-4197-a0fd-4eb0e1cfc234",
-//     "descricao": "aprendendo java co rocketseat",
-//     "titulo": "Cadastro tarefa",
-//     "inicio": "2025-08-10T20:18:00",
-//     "fim": "2025-08-11T21:19:02",
-//     "prioridade": "alta",
-//     "createdAt": "2025-07-07T11:00:34.422425"
-// }
 
-// new request
-// PEGAR ID DA TAREFA CRIADA - NESTE CASO "id"f0d9f9f5-c422-493d-ae11-b2ae86da6987",
-// put -> localhost:8080/tasks/f0d9f9f5-c422-493d-ae11-b2ae86da6987
-// body - json - no corpo alterar o que deseja
-// {
-//      "prioridade": "alta"
-// }
-//send
-// return 200
-// {
-//     "id": "b5727007-946c-4601-96ed-141cc627c540",
-//     "idUsuario": null,
-//     "descricao": null,
-//     "titulo": null,
-//     "inicio": null,
-//     "fim": null,
-//     "prioridade": "alta",
-//     "createdAt": null
-// }
-// o resto ficou nulo, para não ter isso pode copiar todo objeto salvo e só alterar o que quer
-// {
-//     "id": "f0d9f9f5-c422-493d-ae11-b2ae86da6987",
-//     "idUsuario": null,
-//     "descricao": "upload",
-//     "titulo": "Cadastro tarefa",
-//     "inicio": "2025-08-10T20:18:00",
-//     "fim": "2025-08-11T21:19:02",
-//     "prioridade": "baixa",
-//     "createdAt": "2025-07-07T11:00:34.422425"
-// }
-// id usuário ainda está nulo
-
-//erro ao fazer put
-// org.hibernate.StaleObjectStateException: Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [br.com.afr8799.todolist.task.TaskModel#f0d9f9f5-c422-493d-ae11-b2ae86da6987]
-// motivo 
-// não alterei o id na url 
-
-// retorno do sout / synten.out = idUser null

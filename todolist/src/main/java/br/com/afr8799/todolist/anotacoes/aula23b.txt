@@ -1,0 +1,281 @@
+
+__________________________________________________ cód TaskController
+
+package br.com.afr8799.todolist.task;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.afr8799.todolist.filter.FilterTaskAuth;
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+
+
+
+
+@RestController
+@RequestMapping("/tasks")
+public class TaskController {
+
+    private final FilterTaskAuth filterTaskAuth;
+    
+    @Autowired
+    private ITaskRepository taskRespository;
+
+    TaskController(FilterTaskAuth filterTaskAuth) {
+        this.filterTaskAuth = filterTaskAuth;
+    }
+    
+    @PostMapping("/")
+
+
+    public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
+
+        var idUser = request.getAttribute("idUsuario");
+
+        taskModel.setIdUsuario((UUID) idUser);
+
+        var currentDate = LocalDateTime.now();
+
+        if(currentDate.isAfter(taskModel.getInicio()) || currentDate.isAfter(taskModel.getFim())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Data inválida, favor por data futura, pós data de abertura");
+        }
+
+
+        if(taskModel.getInicio().isAfter(taskModel.getFim())) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("hora inválida, data de iníicio deve ser antes da de término");
+        }
+
+
+        var task = this.taskRespository.save(taskModel);
+        return ResponseEntity.status(HttpStatus.OK).body(task);
+    
+    }
+
+
+    public String getMethodName(@RequestParam String param) {
+        return new String();
+    }
+
+    @GetMapping("/")
+    public List<TaskModel> list(HttpServletRequest request) {
+
+        var idUser = request.getAttribute("idUsuario");
+        var tasks = this.taskRespository.findByIdUsuario((UUID) idUser);
+        return tasks;
+
+    }
+
+    // receber informações a serem alteradas
+    //id da tarefa 
+    //ex : hhtp://local8080/tasks/id
+    // este id é uma variável do path/rota - parâmetro de rota - route parameter ou path parameter - identifica recursos
+    //{id} é o nome atributo
+    @PutMapping("/{id}")
+    public TaskModel update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
+        //TODO: process PUT request
+        //pegar
+        var idUser = request.getAttribute("idUsuario");
+        //id usuário não estava indo
+        //sout = System.out.println() - resultado era nulo
+        System.out.println("idUser " + idUser);
+        // pegar id usurario
+        taskModel.setIdUsuario((UUID) idUser);
+        //setar id da task
+        taskModel.setId(id);
+        return this.taskRespository.save(taskModel);
+        // ir para FilterTaskAuth.java para arrumar user null
+   
+    }
+
+}
+
+// ir para apidog
+// post - localhost:8080/users/ - body - json - 200
+// {
+//      "username": "Ale",
+//      "name": "ALes",
+//      "password": "abacates"
+// }
+//return 200
+// {
+//     "id": "f4c3cbf6-563a-4197-a0fd-4eb0e1cfc234",
+//     "username": "Ale",
+//     "name": "ALes",
+//     "password": "$2a$12$5OCyTfy48CtsfKz1.y5zfOFqAvyhxjtYN1noqN2Ga6er2N4BZb.4W",
+//     "createdAt": "2025-07-07T11:00:02.936256"
+// }
+
+// post -> localhost:8080/tasks/
+// body - json
+// {
+    
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-08-10T20:18:00",
+//     "fim": "2025-08-11T21:19:02",
+//     "prioridade": "alta",
+//     "createdAt": "2025-07-07T10:30:53.032889"
+// }
+// IR PARAR AUTH - USERNAME Ale PASSWORD abacates - send
+//return 200
+// {
+//     "id": "f0d9f9f5-c422-493d-ae11-b2ae86da6987",
+//     "idUsuario": "f4c3cbf6-563a-4197-a0fd-4eb0e1cfc234",
+//     "descricao": "aprendendo java co rocketseat",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-08-10T20:18:00",
+//     "fim": "2025-08-11T21:19:02",
+//     "prioridade": "alta",
+//     "createdAt": "2025-07-07T11:00:34.422425"
+// }
+
+// new request
+// PEGAR ID DA TAREFA CRIADA - NESTE CASO "id"f0d9f9f5-c422-493d-ae11-b2ae86da6987",
+// put -> localhost:8080/tasks/f0d9f9f5-c422-493d-ae11-b2ae86da6987
+// body - json - no corpo alterar o que deseja
+// {
+//      "prioridade": "alta"
+// }
+//send
+// return 200
+// {
+//     "id": "b5727007-946c-4601-96ed-141cc627c540",
+//     "idUsuario": null,
+//     "descricao": null,
+//     "titulo": null,
+//     "inicio": null,
+//     "fim": null,
+//     "prioridade": "alta",
+//     "createdAt": null
+// }
+// o resto ficou nulo, para não ter isso pode copiar todo objeto salvo e só alterar o que quer
+// {
+//     "id": "f0d9f9f5-c422-493d-ae11-b2ae86da6987",
+//     "idUsuario": null,
+//     "descricao": "upload",
+//     "titulo": "Cadastro tarefa",
+//     "inicio": "2025-08-10T20:18:00",
+//     "fim": "2025-08-11T21:19:02",
+//     "prioridade": "baixa",
+//     "createdAt": "2025-07-07T11:00:34.422425"
+// }
+// id usuário ainda está nulo
+
+//erro ao fazer put
+// org.hibernate.StaleObjectStateException: Row was updated or deleted by another transaction (or unsaved-value mapping was incorrect): [br.com.afr8799.todolist.task.TaskModel#f0d9f9f5-c422-493d-ae11-b2ae86da6987]
+// motivo 
+// não alterei o id na url 
+
+// retorno do sout / synten.out = idUser null
+
+
+__________________________________________________ cód FilterTaskAuth
+
+package br.com.afr8799.todolist.filter;
+
+import java.io.IOException;
+import java.util.Base64;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import br.com.afr8799.todolist.users.IUserRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@Component
+public class FilterTaskAuth extends OncePerRequestFilter {
+
+    @Autowired
+    private IUserRepository userRepository;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+
+        var servletPath = request.getServletPath();
+        
+        //analisando iduser null
+        //1° retorno no terminal = path /user path /tasks/ path /taskss/03993f65-3650-44d7-ad58-5e603b1a92dc
+        // com iduser null ainda
+        System.out.println("path " + servletPath);
+       
+        // estava servletPath.equals("/tasks/") -> igual a 
+        // agora será iniciando com
+        //pegará tanto o tasks quanto o id
+        
+        //if (servletPath.equals("/tasks/")) {
+        if (servletPath.startsWith("/tasks/")) {
+
+            var autoriza = request.getHeader("Authorization");
+
+            var authEcoded = autoriza.substring("Basic".length()).trim();
+
+            byte[] autoDecode = Base64.getDecoder().decode(authEcoded);
+
+            var convetStr = new String(autoDecode);
+
+            String[] credencials = convetStr.split(":");
+            String username = credencials[0];
+            String password = credencials[1];
+
+                var usuario = this.userRepository.findByUsername(username);
+
+                if (usuario == null) {
+                    response.sendError(401);
+                } else {
+                    var passwVerify = BCrypt.verifyer().verify(password.toCharArray(), usuario.getPassword());
+                    
+                    if(passwVerify.verified) {
+
+                        request.setAttribute("idUsuario", usuario.getId());
+                        
+                        filterChain.doFilter(request, response);
+                    } else {
+                        response.sendError(401);
+                    }
+                }
+
+        } else {
+            
+            filterChain.doFilter(request, response);
+        }
+    }
+}
+
+// apidog return 500
+// retorno terminal
+// 2025-07-07T11:57:07.633-03:00  INFO 24296 --- [on(2)-127.0.0.1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+// path /users/
+// path /tasks/
+// path /tasks/64a8482b-7a2d-4e95-97f7-2f6d7f3c68e6
+// 2025-07-07T11:57:49.082-03:00 ERROR 24296 --- [nio-8080-exec-4] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
+
+// java.lang.NullPointerException: Cannot invoke "String.substring(int)" because "autoriza" is null
+
+//                           OBS
+
+// COM EQUAL ACEITA
+//RETORNO
+// path /tasks/e2957e20-d255-448b-bd1c-5b92d9414f6d
+// idUser null
