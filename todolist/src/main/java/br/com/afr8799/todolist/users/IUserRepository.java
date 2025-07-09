@@ -14,4 +14,3 @@ public interface IUserRepository extends JpaRepository<UserModel, UUID> {
 
 }
 
-// calor
