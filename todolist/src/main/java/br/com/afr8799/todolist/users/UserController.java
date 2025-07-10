@@ -21,11 +21,13 @@ public class UserController {
 
    
     @PostMapping("/")
-    public ResponseEntity create(@RequestBody UserModel userModel) {
+    // userModel - recebe os dados do usuário no corpo da requisição json via @RequestBody
+        public ResponseEntity create(@RequestBody UserModel userModel) {
         
+        // o username é para verificar existência do usuário, usando 
         var user = this.userREpository.findByUsername(userModel.getUsername());
 
-       
+       //verifica se o usuário já existe, se sim 400, se não segue
         if(user != null) {
             return ResponseEntity.status(400).body("BAD_REQUEST - Usuário já cadastrado");
             
@@ -36,18 +38,9 @@ public class UserController {
 
         userModel.setPassword(passwordHash);
 
+        //o objeeto userModel completo, com senha criptografada é salvo no bd - this.userREpository.save(userModel)
         var userCreated =  this.userREpository.save(userModel);
         return ResponseEntity.status(200).body(userCreated);
     }
 }
 
-// ao dar send - com o filtertaskAuth feito - aula 16 - dá 200 e chegou no filtro 
-// lembrando que é :
-// post -> localhost:8080/users/
-// body - json
-// {
-//     "username": "Ale",
-//     "name": "ALessa",
-//     "password": "abacate"
-// }
-//retorno do id = 8952e1a3-2025-4616-9551-069f58d103c7

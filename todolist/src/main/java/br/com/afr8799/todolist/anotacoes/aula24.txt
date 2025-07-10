@@ -1,0 +1,5 @@
+Updade Parcial
+
+criar método que verifica atributo e vê o que é ou não nulo
+
+folder utils e file utils
